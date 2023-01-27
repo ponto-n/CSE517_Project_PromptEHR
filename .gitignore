@@ -1,0 +1,3 @@
+# Ignore files downloaded by PromptEHR
+demo_data
+simulation
