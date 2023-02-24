@@ -1,0 +1,4 @@
+# Ignoring large files, these must be downloaded following directions here:
+# https://github.com/ycq091044/SafeDrug
+drug-DDI.csv
+drugbank_drugs_info.csv

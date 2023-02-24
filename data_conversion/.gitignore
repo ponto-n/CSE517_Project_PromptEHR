@@ -1,2 +1,3 @@
+# Folder containing smaller versions of the MIMIC-III csv files for debugging 
+# the conversion code
 small_csvs
-*.csv
