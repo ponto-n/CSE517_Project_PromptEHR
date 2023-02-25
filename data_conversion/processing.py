@@ -123,7 +123,9 @@ def process_visit_lg2(med_pd):
         .reset_index()
     )
     a["HADM_ID_Len"] = a["HADM_ID"].map(lambda x: len(x))
-    a = a[a["HADM_ID_Len"] > 1]
+    '''NOTE: commented the line below out because it significantly reduced the 
+    amount of data being produced. Only about 6k patients had more than 1 visit.'''
+    # a = a[a["HADM_ID_Len"] > 1]
     return a
 
 
@@ -334,7 +336,10 @@ def create_str_token_mapping(df):
 # create final records
 def create_patient_record(df, diag_voc, med_voc, pro_voc):
     records = []  # (patient, code_kind:3, codes)  code_kind:diag, proc, med
-    for subject_id in df["SUBJECT_ID"].unique():
+    # NOTE: save list of which patients are represented in the data to create feature.csv
+    unique_patients = list(df["SUBJECT_ID"].unique())
+    dill.dump(obj=unique_patients, file=open(os.path.join(OUTPUT_DIR, 'unique_patients.pkl'), 'wb'))
+    for subject_id in unique_patients:
         item_df = df[df["SUBJECT_ID"] == subject_id]
         patient = []
         for index, row in item_df.iterrows():
@@ -450,32 +455,36 @@ def get_ddi_mask(atc42SMLES, med_voc):
             ddi_matrix[i, fracSet.index(frac)] = 1
     return ddi_matrix
 
+MIMIC_DIR = 'C:/Users/noah/mimic-iii'
+INPUT_DIR = './data_conversion/safedrug_input'
+OUTPUT_DIR = './data_conversion/converted_data'
 
 if __name__ == "__main__":
-
+    import os
     # files can be downloaded from https://mimic.physionet.org/gettingstarted/dbsetup/
     # please change into your own MIMIC folder
-    med_file = "/srv/local/data/physionet.org/files/mimiciii/1.4/PRESCRIPTIONS.csv"
-    diag_file = "/srv/local/data/physionet.org/files/mimiciii/1.4/DIAGNOSES_ICD.csv"
-    procedure_file = (
-        "/srv/local/data/physionet.org/files/mimiciii/1.4/PROCEDURES_ICD.csv"
-    )
+    med_file =       MIMIC_DIR + '/PRESCRIPTIONS.csv'
+    diag_file =      MIMIC_DIR + '/DIAGNOSES_ICD.csv'
+    procedure_file = MIMIC_DIR + '/PROCEDURES_ICD.csv'
 
     # input auxiliary files
-    med_structure_file = "./output/atc32SMILES.pkl"
-    RXCUI2atc4_file = "./input/RXCUI2atc4.csv"
-    cid2atc6_file = "./input/drug-atc.csv"
-    ndc2RXCUI_file = "./input/ndc2RXCUI.txt"
-    ddi_file = "./input/drug-DDI.csv"
-    drugbankinfo = "./input/drugbank_drugs_info.csv"
+    med_structure_file = os.path.join(OUTPUT_DIR, "atc32SMILES.pkl")
+    RXCUI2atc4_file =    os.path.join(INPUT_DIR, "RXCUI2atc4.csv")
+    cid2atc6_file =      os.path.join(INPUT_DIR, "drug-atc.csv")
+    ndc2RXCUI_file =     os.path.join(INPUT_DIR, "ndc2RXCUI.txt")
+    ddi_file =           os.path.join(INPUT_DIR, "drug-DDI.csv")
+    drugbankinfo =       os.path.join(INPUT_DIR, "drugbank_drugs_info.csv")
+    
 
     # output files
-    ddi_adjacency_file = "./output/ddi_A_final.pkl"
-    ehr_adjacency_file = "./output/ehr_adj_final.pkl"
-    ehr_sequence_file = "./output/records_final.pkl"
-    vocabulary_file = "./output/voc_final.pkl"
-    ddi_mask_H_file = "./output/ddi_mask_H.pkl"
-    atc3toSMILES_file = "./output/atc3toSMILES.pkl"
+    '''NOTE: don't need to save these files for our purposes, also commented out
+    the code below which saved to these file paths'''
+    # ddi_adjacency_file = "./output/ddi_A_final.pkl"
+    # ehr_adjacency_file = "./output/ehr_adj_final.pkl"
+    ehr_sequence_file = os.path.join(OUTPUT_DIR, "visits.pkl")
+    vocabulary_file =   os.path.join(OUTPUT_DIR, "voc.pkl")
+    # ddi_mask_H_file =   os.path.join(OUTPUT_DIR, "ddi_mask_H.pkl")
+    atc3toSMILES_file = os.path.join(OUTPUT_DIR, "atc3toSMILES.pkl")
 
     # for med
     med_pd = med_process(med_file)
@@ -519,10 +528,10 @@ if __name__ == "__main__":
     records = create_patient_record(data, diag_voc, med_voc, pro_voc)
     print("obtain ehr sequence data")
 
-    # create ddi adj matrix
-    ddi_adj = get_ddi_matrix(records, med_voc, ddi_file)
-    print("obtain ddi adj matrix")
+    # # create ddi adj matrix
+    # ddi_adj = get_ddi_matrix(records, med_voc, ddi_file)
+    # print("obtain ddi adj matrix")
 
-    # get ddi_mask_H
-    ddi_mask_H = get_ddi_mask(atc3toSMILES, med_voc)
-    dill.dump(ddi_mask_H, open(ddi_mask_H_file, "wb"))
+    # # get ddi_mask_H
+    # ddi_mask_H = get_ddi_mask(atc3toSMILES, med_voc)
+    # dill.dump(ddi_mask_H, open(ddi_mask_H_file, "wb"))

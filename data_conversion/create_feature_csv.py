@@ -6,7 +6,7 @@ Create the feature.csv file to train the PromptEHR model
 import pandas as pd
 from datetime import datetime
 import os
-import math
+import dill
 
 '''
 Creating features.csv
@@ -27,17 +27,25 @@ SAVE_FILE = './data_conversion/converted_data/feature.csv'
 
 
 def main():
+    unique_patients = dill.load(
+        open('data_conversion/converted_data/unique_patients.pkl', 'rb'))
     patients_df = pd.read_csv(os.path.join(DIR, PATIENTS_FILE), usecols=[
                               'SUBJECT_ID', 'DOB', 'GENDER', 'DOD_HOSP'])
     admissions_df = pd.read_csv(os.path.join(DIR, ADMISSIONS_FILE), usecols=[
                                 'SUBJECT_ID', 'ETHNICITY', 'ADMITTIME'])
 
     # Only use the first admission to calculate age
-    admissions_df = admissions_df.drop_duplicates(subset=['SUBJECT_ID'])
+    # admissions_df = admissions_df.drop_duplicates(subset=['SUBJECT_ID'])
+    admissions_df = admissions_df.groupby(['SUBJECT_ID']).max().reset_index()
 
     # Join the dataframes on the SUBJECT_ID column
-    joint_df = patients_df.join(
-        admissions_df.set_index('SUBJECT_ID'), on='SUBJECT_ID')
+    joint_df = patients_df.join(admissions_df.set_index('SUBJECT_ID'), on='SUBJECT_ID')
+
+    # Remove any patient IDs not in the set of unique patients
+    print(f'using {len(unique_patients)}')
+    joint_df = joint_df[joint_df['SUBJECT_ID'].isin(unique_patients)]
+    joint_df = joint_df.sort_values(by='SUBJECT_ID')
+    joint_df = joint_df.reset_index(drop=True)
 
     def calculate_age(row):
         '''Uses the DOB and ADMITTIME to calculate the age of the participant'''
@@ -61,7 +69,8 @@ def main():
     joint_df['MORTALITY'] = joint_df.apply(convert_mortality, axis=1)
 
     # Reorganize
-    joint_df = joint_df[['SUBJECT_ID', 'AGE', 'GENDER', 'ETHNICITY', 'MORTALITY']]
+    joint_df = joint_df[['SUBJECT_ID', 'AGE',
+                         'GENDER', 'ETHNICITY', 'MORTALITY']]
 
     # Save the feature.csv file
     joint_df.to_csv(SAVE_FILE)

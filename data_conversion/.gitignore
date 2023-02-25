@@ -1,3 +1,7 @@
 # Folder containing smaller versions of the MIMIC-III csv files for debugging 
 # the conversion code
 small_csvs
+
+# Files that are too large to push to GitHub
+*.pkl
+converted_data/feature.csv
