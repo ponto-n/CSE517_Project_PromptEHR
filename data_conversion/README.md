@@ -27,3 +27,12 @@ voc.pkl
     * unique_patients.pkl
 
 4. Run the `create_feature_csv.py` script. This will create the feature.csv file.
+
+5. To split into train, validation, and test sets, run `split_datasets.py`, which should have an output like:
+```
+Found 35419 samples.
+Splitting data:
+ Training:       30106
+ Validation:      1771
+ Test:            3542
+ ```

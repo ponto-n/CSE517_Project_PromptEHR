@@ -5,3 +5,6 @@ small_csvs
 # Files that are too large to push to GitHub
 *.pkl
 converted_data/feature.csv
+
+# Folder with datasets split into parts for training, val, and test
+datasets/
