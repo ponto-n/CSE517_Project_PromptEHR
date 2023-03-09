@@ -1,12 +1,12 @@
+import torch
+from pytrial.data.demo_data import load_mimic_ehr_sequence
+from pytrial.tasks.trial_simulation.data import SequencePatient
+from math import ceil
+from promptehr import PromptEHR
+
 '''
 Test pytorch
 '''
-
-import torch
-print(torch.__version__)
-print(torch.cuda.is_available())
-print(torch.device)
-
 print(f'Using torch version {torch.__version__}')
 batch_size = 4
 if torch.cuda.is_available():
@@ -22,10 +22,8 @@ Load the data
 '''
 N_SAMPLE = 15000
 EPOCHS = 50
-from pytrial.data.demo_data import load_mimic_ehr_sequence
-from pytrial.tasks.trial_simulation.data import SequencePatient
 
-data_dir = 'C:\\Users\\noah\\cse517_project_code\\data_conversion\\datasets\\train'
+data_dir = './data_conversion/datasets/train'
 demo = load_mimic_ehr_sequence(input_dir=data_dir, n_sample=N_SAMPLE)
 seqdata = SequencePatient(data={'v':demo['visit'], 'y':demo['mortality'], 'x':demo['feature'],},
     metadata={
@@ -40,8 +38,6 @@ seqdata = SequencePatient(data={'v':demo['visit'], 'y':demo['mortality'], 'x':de
 '''
 Create the model
 '''
-from math import ceil
-from promptehr import PromptEHR
 
 # Set eval step to be greater than the total required steps to avoid evaluating
 number_samples = len(seqdata.visit)
@@ -58,7 +54,7 @@ model = PromptEHR(
     epoch=EPOCHS,
     batch_size=batch_size,
     # device=[1,2],
-    output_dir='C:\\Users\\noah\\cse517_project_code\\promptEHR_logs'
+    output_dir='./promptEHR_logs'
 )
 
 '''
