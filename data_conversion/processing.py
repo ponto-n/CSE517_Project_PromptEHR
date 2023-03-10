@@ -10,6 +10,7 @@ import numpy as np
 from collections import defaultdict
 from rdkit import Chem
 from rdkit.Chem import BRICS
+from promptehr.data import Voc
 
 ##### process medications #####
 # load med data
@@ -300,19 +301,7 @@ def statistics(data):
     print("#max of medicines ", max_med)
     print("#max of procedures ", max_pro)
     print("#max of visit ", max_visit)
-
-
-##### indexing file and final record
-class Voc(object):
-    def __init__(self):
-        self.idx2word = {}
-        self.word2idx = {}
-
-    def add_sentence(self, sentence):
-        for word in sentence:
-            if word not in self.word2idx:
-                self.idx2word[len(self.word2idx)] = word
-                self.word2idx[word] = len(self.word2idx)
+    
 
 
 # create voc set
@@ -327,7 +316,7 @@ def create_str_token_mapping(df):
         pro_voc.add_sentence(row["PRO_CODE"])
 
     dill.dump(
-        obj={"diag_voc": diag_voc, "med_voc": med_voc, "pro_voc": pro_voc},
+        obj={"diag": diag_voc, "med": med_voc, "prod": pro_voc},
         file=open(vocabulary_file, "wb"),
     )
     return diag_voc, med_voc, pro_voc
