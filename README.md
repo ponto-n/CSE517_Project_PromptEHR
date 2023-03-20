@@ -43,4 +43,5 @@ The code to evaluate the perplexity, privacy, and utility of the models is in th
 ## Useful Links
 [CSE 517 Project Instructions](https://nasmith.github.io/NLP-winter22/assets/docs/project-517.pdf) \
 [PromptEHR Paper](https://preview.aclanthology.org/emnlp-22-ingestion/2022.emnlp-main.185.pdf) \
-[PromptEHR GitHub](https://github.com/RyanWangZf/PromptEHR)
+[PromptEHR GitHub](https://github.com/RyanWangZf/PromptEHR)\
+[Reproducibility Report](https://drive.google.com/file/d/1mR8rUyazhtazs4RHtBYVAeOO7tpZJA59/view)
