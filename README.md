@@ -38,6 +38,9 @@ Some parameters such as the number of epochs, batch size, number of training sam
 
 The code to evaluate the perplexity, privacy, and utility of the models is in the `evaluate.ipynb` notebook file. This file assumes there is a fully trained model in the folder `./model_50_epochs_30k_samples` and a partially trained model in the folder `./model_20_epochs_15k_samples`. These folders are ignored by git as they are too large to push to the repository.
 
+# Computational Requirements:
+
+We trained the model using an NVIDIA V100 GPU on Google Cloud Platform for 5 epochs. The original paper requires 251 GB of RAM to train on the whole dataset with 16 epochs so you might want to think about that before hand on platforms where you can find the right GPUs.
 
 ---
 ## Useful Links
